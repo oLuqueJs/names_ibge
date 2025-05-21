@@ -8,6 +8,7 @@ import { Repository } from 'typeorm';
 import { User } from './model/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -20,6 +21,10 @@ export class UserService {
     try {
       if (!data) {
         throw new HttpException('Data is missing', HttpStatus.BAD_REQUEST);
+      }
+
+      if (data.password && data.password.length < 60) {
+        data.password = await bcrypt.hash(data.password, 13);
       }
 
       const user = await this.userRepository.save(data);
@@ -90,6 +95,10 @@ export class UserService {
       const USER = await this.userRepository.findOneBy({ id })
       if (!USER) {
         throw new HttpException("User not found", HttpStatus.NOT_FOUND)
+      }
+
+      if (data.password) {
+        data.password = await bcrypt.hash(data.password, 13);
       }
 
       const UPDATED_USER = Object.assign(USER, data);
