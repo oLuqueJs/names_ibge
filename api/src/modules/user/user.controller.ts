@@ -1,9 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { User } from "./model/user.entity";
 import { UpdateUserDto } from "./dto/update-user.dto";
+import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
+import { CurrentUser } from "../auth/decorators/current-user.decorator";
 
+@UseGuards(JwtAuthGuard)
 @Controller('user')
 export class UserController {
   constructor (
@@ -13,6 +16,11 @@ export class UserController {
   @Post()
   async createUser(@Body() data: CreateUserDto): Promise<Omit<User, 'password'>> {
     return this.userService.createUser(data);
+  }
+
+  @Get('profile')
+  async getProfile(@CurrentUser() user) {
+    return this.userService.findUser(user.id);
   }
 
   @Get(':id')
