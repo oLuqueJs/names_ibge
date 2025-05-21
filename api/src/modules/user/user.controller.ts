@@ -11,22 +11,22 @@ export class UserController {
   ) {}
 
   @Post()
-  async createUser(@Body() data: CreateUserDto): Promise<User> {
+  async createUser(@Body() data: CreateUserDto): Promise<Omit<User, 'password'>> {
     return this.userService.createUser(data);
   }
 
   @Get(':id')
-  async findUser(@Param('id') id: string): Promise<User|null> {
+  async findUser(@Param('id') id: string): Promise<Omit<User,'password'>|null> {
     return this.userService.findUser(+id);
   }
 
   @Get()
-  async findUsers(): Promise<User[]> {
+  async findUsers(): Promise<Omit<User, 'password'>[]> {
     return this.userService.findUsers();
   }
 
   @Patch()
-  async updateUser(@Body() id: number, data: UpdateUserDto): Promise<User|null> {
+  async updateUser(@Body() id: number, data: UpdateUserDto): Promise<Omit<User, 'password'>|null> {
     return this.userService.updateUser(id, data);
   }
 
